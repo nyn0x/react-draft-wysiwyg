@@ -12,7 +12,7 @@ import linkifyIt from 'linkify-it';
 
 import LayoutComponent from './Component';
 
-const linkify = linkifyIt();
+let linkify = null;
 
 class Link extends Component {
   static propTypes = {
@@ -30,7 +30,8 @@ class Link extends Component {
   };
 
   componentWillMount(): void {
-    const { editorState, modalHandler } = this.props;
+    const { editorState, modalHandler, config: { linkifyItSchemas } } = this.props;
+    linkify = linkifyIt(linkifyItSchemas);
     if (editorState) {
       this.setState({
         currentEntity: getSelectionEntity(editorState),
@@ -59,9 +60,8 @@ class Link extends Component {
 
   onChange = (action, title, target, targetOption) => {
     if (action === 'link') {
-      // const links = linkify.match(target);
-      // const linkifiedTarget = links && links[0] ? links[0].url : '';
-      const linkifiedTarget = target;
+      const links = linkify.match(target);
+      const linkifiedTarget = links && links[0] ? links[0].url : '';
       this.addLink(title, linkifiedTarget, targetOption);
     } else {
       this.removeLink();
@@ -109,25 +109,42 @@ class Link extends Component {
     let selection = editorState.getSelection();
     if (currentEntity) {
       const entityRange = getEntityRange(editorState, currentEntity);
-      selection = selection.merge({
-        anchorOffset: entityRange.start,
-        focusOffset: entityRange.end,
-      });
+      const isBackward = selection.getIsBackward();
+      if (isBackward) {
+        selection = selection.merge({
+          anchorOffset: entityRange.end,
+          focusOffset: entityRange.start,
+        });
+      } else {
+        selection = selection.merge({
+          anchorOffset: entityRange.start,
+          focusOffset: entityRange.end,
+        });
+      }
+
       onChange(RichUtils.toggleLink(editorState, selection, null));
     }
   };
 
   addLink: Function = (linkTitle, linkTarget, linkTargetOption): void => {
-    const { editorState, onChange } = this.props;
+    const { editorState, onChange, config: { trailingWhitespace } } = this.props;
     const { currentEntity } = this.state;
     let selection = editorState.getSelection();
 
     if (currentEntity) {
       const entityRange = getEntityRange(editorState, currentEntity);
-      selection = selection.merge({
-        anchorOffset: entityRange.start,
-        focusOffset: entityRange.end,
-      });
+      const isBackward = selection.getIsBackward();
+      if (isBackward) {
+        selection = selection.merge({
+          anchorOffset: entityRange.end,
+          focusOffset: entityRange.start,
+        });
+      } else {
+        selection = selection.merge({
+          anchorOffset: entityRange.start,
+          focusOffset: entityRange.end,
+        });
+      }
     }
     const entityKey = editorState
       .getCurrentContent()
@@ -144,18 +161,20 @@ class Link extends Component {
     let newEditorState = EditorState.push(editorState, contentState, 'insert-characters');
 
     // insert a blank space after link
-    selection = newEditorState.getSelection().merge({
-      anchorOffset: selection.get('anchorOffset') + linkTitle.length,
-      focusOffset: selection.get('anchorOffset') + linkTitle.length,
-    });
-    newEditorState = EditorState.acceptSelection(newEditorState, selection);
-    contentState = Modifier.insertText(
-      newEditorState.getCurrentContent(),
-      selection,
-      ' ',
-      newEditorState.getCurrentInlineStyle(),
-      undefined,
-    );
+    if (trailingWhitespace) {
+      selection = newEditorState.getSelection().merge({
+        anchorOffset: selection.get('anchorOffset') + linkTitle.length,
+        focusOffset: selection.get('anchorOffset') + linkTitle.length,
+      });
+      newEditorState = EditorState.acceptSelection(newEditorState, selection);
+      contentState = Modifier.insertText(
+        newEditorState.getCurrentContent(),
+        selection,
+        ' ',
+        newEditorState.getCurrentInlineStyle(),
+        undefined,
+      );
+    }
     onChange(EditorState.push(newEditorState, contentState, 'insert-characters'));
     this.doCollapse();
   };
