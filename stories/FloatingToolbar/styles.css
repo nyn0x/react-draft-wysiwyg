@@ -1,8 +1,14 @@
 .rdw-storybook-toolbar-absolute {
   position: absolute;
-  top: -130px;
+  top: -75px;
+  /* height ultra important pour le sticky de la div enfant */
+  height: 100%;
+}
+.rdw-storybook-toolbar-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 .rdw-storybook-wrapper-margined {
-  margin-top: 100px;
   position: relative;
 }
