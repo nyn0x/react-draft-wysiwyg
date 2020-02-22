@@ -52,7 +52,7 @@ export default () => (
         "import { Editor } from 'react-draft-wysiwyg';\n" +
         "\n\n" +
         "<Editor\n" +
-        "  toolbarOnFocus\n" +
+        "  toolbarHidden\n" +
         '  wrapperClassName="wrapper-class"\n' +
         '  editorClassName="editor-class"\n' +
         '  toolbarClassName="toolbar-class"\n' +
@@ -141,6 +141,25 @@ export default () => (
         </span>
       </li>
       <li>
+        <b>link: linkCallback</b>
+        <span>
+          : This is callback to process the link added by the user. By default
+          library{" "}
+          <a href="https://github.com/markdown-it/linkify-it" target="blank">
+            linkify-it
+          </a>{" "}
+          is used for the purpose. <br />
+          The callback is passed an object with following details
+          <code className="code_sm">
+            {
+              "{title: <text>,target: <link>,targetOption: <_blank|_self|_parent|_top>}"
+            }
+          </code>
+          . It is expected to return a similar object with new details which
+          will be saved iin the link.
+        </span>
+      </li>
+      <li>
         <b>emoji: emojis</b>
         <span>
           : The property is arrary of emoji characters (unicodes). Which are
@@ -152,6 +171,14 @@ export default () => (
         <span>
           : This property can be used to pass default size (height and width) of
           embedded link in the editor. The default values are 'auto'.
+        </span>
+      </li>
+      <li>
+        <b>embedded: embedCallBack</b>
+        <span>
+          : This callback is called after user add a url to be embedded, it can
+          be used to do any required modifications to the url. The callback is
+          passed a url and should return url only.
         </span>
       </li>
       <li>
@@ -172,9 +199,11 @@ export default () => (
         <b>image: uploadCallback</b>
         <span>
           : This is image upload callBack. It should return a promise that
-          resolves to give image src. Default value is true.<br />
+          resolves to give image src. Default value is true.
+          <br />
           Both above options of uploadEnabled and uploadCallback should be
-          present for upload to be enabled.<br />
+          present for upload to be enabled.
+          <br />
           Promise should resolve to return an object{" "}
           <code className="code_sm">{"{ data: { link: <THE_URL>}}"}</code>.
         </span>
@@ -212,7 +241,7 @@ export default () => (
         <b>image: defaultSize</b>
         <span>
           : This property can be used to pass default size (height and width) of
-          embedded link in the editor. The default values are 'auto'.
+          image in the editor. The default values are 'auto'.
         </span>
       </li>
     </ol>

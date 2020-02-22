@@ -79,6 +79,7 @@ export default "{\n" +
   "    options: ['link', 'unlink'],\n" +
   "    link: { icon: link, className: undefined },\n" +
   "    unlink: { icon: unlink, className: undefined },\n" +
+  "    linkCallback: undefined\n" +
   "  },\n" +
   "  emoji: {\n" +
   "    icon: emoji,\n" +
@@ -102,6 +103,7 @@ export default "{\n" +
   "    className: undefined,\n" +
   "    component: undefined,\n" +
   "    popupClassName: undefined,\n" +
+  "    embedCallback: undefined,\n" +
   "    defaultSize: {\n" +
   "      height: 'auto',\n" +
   "      width: 'auto',\n" +
