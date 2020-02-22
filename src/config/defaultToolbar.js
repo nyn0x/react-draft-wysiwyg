@@ -181,7 +181,6 @@ export default {
     options: ["link", "unlink"],
     link: { icon: link, className: undefined, title: undefined },
     unlink: { icon: unlink, className: undefined, title: undefined },
-    trailingWhitespace: true,
     linkifyItSchemas: undefined,
     linkCallback: undefined
   },
